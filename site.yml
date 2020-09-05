@@ -1,0 +1,77 @@
+---
+
+- hosts: all
+  become: yes
+  pre_tasks:
+
+  - name: update repository cache centos
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+
+  - name: update repsitory cache ubuntu
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: db_servers
+  become: yes
+  tasks:
+
+  - name: install mariadb package centos
+    tags: centos,db,maradb
+    dnf:
+      name: mariadb
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: install mariadb package ubuntu
+    tags: centos,db,maradb
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: file_servers
+  become: yes
+  tasks:
+
+  - name: install samba
+    tags: samba
+    package:
+      name: samba
+      state: latest
+    
+
+- hosts: workstations
+  become: yes
+  tasks:
+
+  - name: install unzip
+    package:
+      name: unzip
+      
+  - name: install terraform
+    tags: terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/0.13.2/terraform_0.13.2_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      owner: root
+      group: root
+      mode: 0755
+
+- hosts: all
+  become: yes
+  tasks:
+
+  - name: add ssh key for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPFoAR+oOIvvDH5tubJoUHWShOtBHAK9rEWb7ub4MUHN Ansible"
+

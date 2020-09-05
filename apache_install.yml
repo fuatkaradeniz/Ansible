@@ -1,0 +1,65 @@
+---
+
+- hosts: all
+  become: yes
+  pre_tasks:
+
+  - name: install updates centos
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates ubuntu
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: install apache and php packages for Ubuntu and CentOS
+    tags: apache,apache2,ubuntu,php
+    package:
+      name:
+        - "{{ apache_install }}"
+        - "{{ php_install }}" 
+      state: latest
+  
+  - name: copy default html file for site
+    copy:
+      src: main_website.html  
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0744
+
+
+  - name: start httpd centos
+    tags: httpd,centos
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "CentOS"
+    
+  - name: restart httpd centos
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin fuatkr@aol.com
+    when: ansible_distribution == "CentOS"
+    register: httpd
+
+
+  - name: restart httpd centos
+    tags: httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
+

@@ -1,20 +1,15 @@
 [web_servers]
-192.168.0.101
-192.168.0.104
+192.168.0.101 apache_install=apache2 php_install=libapache2-mod-php
+192.168.0.104 apache_install=httpd php_install=php
 
 [db_servers]
-192.168.0.102
+192.168.0.102 apache_install=apache2 php_install=libapache2-mod-php
 
-[file-servers]
-192.168.0.101
+[file_servers]
+192.168.0.104 apache_install=httpd php_install=php
 
 [workstations]
-192.168.0.100
+192.168.0.100 apache_install=apache2 php_install=libapache2-mod-php
 
-[ubuntu_servers]
-192.168.0.100
-192.168.0.101
-192.168.0.102
 
-[centos_servers]
-192.168.0.104
+

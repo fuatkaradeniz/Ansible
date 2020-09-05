@@ -1,0 +1,18 @@
+- name: install updates centos
+  tags: always
+  dnf:
+    update_only: yes
+    update_cache: yes
+  when: ansible_distribution == "CentOS"
+
+- name: install updates ubuntu
+  tags: always
+  apt:
+    upgrade: dist
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: add ssh key for simone
+  authorized_key:
+    user: simone
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPFoAR+oOIvvDH5tubJoUHWShOtBHAK9rEWb7ub4MUHN Ansible"
